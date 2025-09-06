@@ -20,7 +20,6 @@ class PasienController extends Controller
 
         $pasiens = $query->get();
 
-        // Jika Ajax, kembalikan HTML <tr> langsung
         if ($request->ajax()) {
             $html = '';
             foreach($pasiens as $pasien) {

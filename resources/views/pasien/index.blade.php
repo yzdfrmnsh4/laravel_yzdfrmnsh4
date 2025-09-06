@@ -1,4 +1,6 @@
 <x-app-layout>
+    @slot('title', 'Data Pasien')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Daftar Pasien</h3>
         <x-primary-button href="{{ route('pasien.create') }}">
@@ -39,73 +41,65 @@
                         </tr>
                     </thead>
                     <tbody id="patients-tbody">
-                        @foreach($pasiens as $pasien)
-                            <tr data-id="{{ $pasien->id }}">
-                                <td>{{ $pasien->id }}</td>
-                                <td>{{ $pasien->nama }}</td>
-                                <td>{{ $pasien->alamat }}</td>
-                                <td>{{ $pasien->telepon }}</td>
-                                <td>{{ $pasien->rumahSakit->nama }}</td>
-                                <td>
-                                    <a href="{{ route('pasien.edit', $pasien->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
-                                    <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ $pasien->id }}">Delete</button>
-                                </td>
-                            </tr>
-                        @endforeach
+                    @forelse($pasiens as $pasien)
+                        <tr data-id="{{ $pasien->id }}">
+                            <td>{{ $pasien->id }}</td>
+                            <td>{{ $pasien->nama }}</td>
+                            <td>{{ $pasien->alamat }}</td>
+                            <td>{{ $pasien->telepon }}</td>
+                            <td>{{ $pasien->rumahSakit->nama }}</td>
+                            <td>
+                                <a href="{{ route('pasien.edit', $pasien->id) }}" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                                <button class="btn btn-sm btn-outline-danger delete-btn" data-id="{{ $pasien->id }}">Delete</button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">Tidak ada data pasien</td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+@push('scripts')
 <script>
-$(document).ready(function() {
-
-    // Filter Rumah Sakit
-    $('#hospital-filter').change(function() {
+$(function() {
+    // Filter Rumah Sakit & Delete Pasien
+    $('#hospital-filter').on('change', function() {
         let hospitalId = $(this).val();
-        $.ajax({
-            url: "{{ route('pasien.index') }}",
-            type: 'GET',
-            data: { rumah_sakit_id: hospitalId },
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            success: function(res) {
-                $('#patients-tbody').html(res);
-                attachDelete(); // attach delete button setelah reload
-            }
+
+        $.get("{{ route('pasien.index') }}", { rumah_sakit_id: hospitalId }, function(res) {
+            $('#patients-tbody').html(res);
         });
     });
 
-    // Delete pasien menggunakan Ajax
-    function attachDelete() {
-        $('.delete-btn').click(function() {
-            if(confirm('Yakin hapus data pasien ini?')) {
-                let pasienId = $(this).data('id');
+    // Event untuk tombol delete
+    $('#patients-tbody').on('click', '.delete-btn', function() {
+        if(!confirm('Yakin hapus data pasien ini?')) return;
 
-                $.ajax({
-                    url: '/data-pasien/delete/' + pasienId, // sesuaikan route
-                    type: 'DELETE',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                    success: function(res) {
-                        if(res.success){
-                            $('tr[data-id="'+pasienId+'"]').remove();
-                        } else {
-                            alert('Gagal menghapus data pasien');
-                        }
-                    },
-                    error: function(err) {
-                        alert('Terjadi kesalahan');
-                    }
-                });
+        let pasienId = $(this).data('id');
+        $.ajax({
+            url: '/data-pasien/delete/' + pasienId,
+            type: 'DELETE',
+            data: { _token: '{{ csrf_token() }}' },
+            success: function(res) {
+                if(res.success){
+                    $('tr[data-id="'+pasienId+'"]').remove();
+                } else {
+                    alert('Gagal menghapus data pasien');
+                }
+            },
+            error: function() {
+                alert('Terjadi kesalahan');
             }
         });
-    }
-
-    attachDelete(); // attach saat pertama load
+    });
 });
 </script>
+@endpush
 
 
 </x-app-layout>

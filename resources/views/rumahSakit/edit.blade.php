@@ -1,4 +1,6 @@
 <x-app-layout>
+    @slot('title', 'Edit')
+
     <div class="mb-4">
         <h3 class="mb-0">Edit Rumah Sakit</h3>
     </div>

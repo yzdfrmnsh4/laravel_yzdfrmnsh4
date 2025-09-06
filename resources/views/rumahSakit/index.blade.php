@@ -1,4 +1,6 @@
 <x-app-layout>
+    @slot('title', 'Data Rumah Sakit')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
     <h3 class="mb-0">Daftar Rumah Sakit</h3>
     <x-primary-button href="{{ route('rumahSakit.create') }}">
@@ -41,21 +43,21 @@
         </div>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> --}}
+@push('scripts')    
 <script>
 $(document).ready(function() {
     $('.delete-btn').click(function() {
         if(confirm('Yakin hapus rumah sakit ini?')) {
-            let id = $(this).data('id');      // ambil ID dari tombol
-            let row = $(this).closest('tr');  // ambil row yang akan dihapus
+            let id = $(this).data('id');      
+            let row = $(this).closest('tr');  
 
             $.ajax({
                 url: '/data-rumah-sakit/delete/' + id,
                 type: 'DELETE',
                 data: { _token: '{{ csrf_token() }}' },
                 success: function() {
-                    row.remove(); // hapus row dari tabel
+                    row.remove(); 
                 },
                 error: function() {
                     alert('Gagal menghapus rumah sakit');
@@ -65,5 +67,6 @@ $(document).ready(function() {
     });
 });
 </script>
+@endpush
 
 </x-app-layout>

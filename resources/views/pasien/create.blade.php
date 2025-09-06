@@ -1,4 +1,6 @@
 <x-app-layout>
+    @slot('title', 'Tambah Data')
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="mb-0">Add New Patient</h3>
         <a href="{{ route('pasien.index') }}" class="btn btn-outline-secondary">Back</a>

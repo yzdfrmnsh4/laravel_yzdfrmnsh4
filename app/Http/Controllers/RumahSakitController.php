@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 
 class RumahSakitController extends Controller
 {
-    public function index() {
-        
+    public function index() 
+    {
         $rumahsakits = RumahSakit::all();
         return view('rumahSakit.index', compact( 'rumahsakits'));
     }
@@ -64,9 +64,7 @@ class RumahSakitController extends Controller
     public function destroy($id)
     {
         $rumahsakit = RumahSakit::findOrFail($id);
-
         $rumahsakit->delete();
-
         return response()->json(['success' => true]);
     }
 
